@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: infra
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: krakend-deploy
+  namespace: infra
+  labels:
+    application: apigateway
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      application: apigateway
+  template:
+    metadata:
+      labels:
+        application: apigateway
+    spec:
+      volumes:
+        - name: krakend-cfg
+          configMap:
+            name: krakend-cfg
+      containers:
+        - name: application
+          resources:
+            requests:
+              memory: '64Mi'
+              cpu: '100m'
+            limits:
+              memory: '1024Mi'
+              cpu: '1000m'
+          image: devopsfaith/krakend:1.2
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+          - name: krakend-cfg
+            mountPath: /etc/krakend
+ 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apigateway
+  namespace: infra
+  labels:
+    application: apigateway  
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: external
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+spec:
+  type: LoadBalancer
+  selector:
+    application: apigateway
+  ports:
+    - port: 80
+      targetPort: 8080

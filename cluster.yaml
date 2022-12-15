@@ -1,0 +1,12 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: krakend-app
+  region: ap-southeast-3
+
+managedNodeGroups:
+  - name: mng
+    instanceType: t3.small
+    desiredCapacity: 1
+    volumeSize: 20

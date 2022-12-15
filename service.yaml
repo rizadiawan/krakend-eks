@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: services
+
+---
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: sample-app
+  namespace: services
+  labels:
+    app: sample
+spec:
+  containers:
+    - name: sample-app
+      image: nginxdemos/nginx-hello
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: sample-service
+  namespace: services
+spec:
+  selector:
+    app: sample
+  ports:
+    - port: 8080 # Default port for image
+

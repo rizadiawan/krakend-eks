@@ -1,0 +1,31 @@
+{
+    "version": 2,
+    "extra_config": {
+        "github_com/devopsfaith/krakend-gologging": {
+            "level": "WARNING",
+            "prefix": "[KRAKEND]",
+            "syslog": false,
+            "stdout": true
+        }
+    },
+    "timeout": "3000ms",
+    "cache_ttl": "300s",
+    "port": 8080,
+    "output_encoding": "string",
+    "name": "apig",
+    "endpoints": [
+        {
+            "endpoint": "/",
+            "method": "GET",
+            "backend": [
+                {
+                    "url_pattern": "/",
+                    "encoding": "string",
+                    "host": [
+                        "sample-service.services:8080"
+                    ]
+                }
+            ]
+        }
+    ]
+}
